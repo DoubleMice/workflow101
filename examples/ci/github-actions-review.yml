@@ -1,0 +1,40 @@
+# AI Code Review — triggered on pull requests
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run AI Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "Review the changes in origin/main...HEAD.
+          Focus on security and logic issues.
+          Output a JSON report with verdict and issues." \
+          --output-format json > review-report.json
+
+      - name: Upload Review Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-report
+          path: review-report.json

@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "pattern": "review_bot/.*\\.py$",
+        "command": "pytest tests/ -x -q 2>&1 | tail -5"
+      }
+    ]
+  }
+}

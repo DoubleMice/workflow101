@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "pattern": "\\.py$",
+        "command": "black $FILE_PATH 2>/dev/null || true"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "pattern": "git commit",
+        "command": "review-bot review --diff HEAD~1 --output markdown"
+      }
+    ]
+  }
+}
