@@ -43,12 +43,19 @@ class DiffResult:
         )
 
 
-def get_diff(target: str = "HEAD~1") -> str:
-    """Run git diff and return raw output."""
+def get_diff(target: str = "HEAD~1", repo: str | None = None) -> str:
+    """Run git diff and return raw output.
+
+    Args:
+        target: Git diff target (e.g., HEAD~1, main, abc1234).
+        repo: Path to the git repository. Uses cwd if None.
+    """
+    cmd = ["git", "diff", target]
     result = subprocess.run(
-        ["git", "diff", target],
+        cmd,
         capture_output=True,
         text=True,
+        cwd=repo,
     )
     if result.returncode != 0:
         raise RuntimeError(f"git diff failed: {result.stderr}")

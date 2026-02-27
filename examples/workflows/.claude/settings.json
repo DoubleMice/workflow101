@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "pattern": "git push.*main",
+        "command": "echo 'BLOCKED: Do not push to main directly. Use a feature branch.' && exit 1"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "pattern": "\\.py$",
+        "command": "black \"$(echo $(cat) | jq -r '.tool_input.file_path // empty')\" 2>/dev/null || true"
+      },
+      {
+        "matcher": "Bash",
+        "pattern": "git commit",
+        "command": "echo '✓ Commit detected — consider running /preflight before pushing'"
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+- Use type hints everywhere
+- Docstrings: Google style
+- Max line length: 88 (black default)
+- Import order: stdlib → third-party → local (isort)

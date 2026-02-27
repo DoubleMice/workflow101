@@ -6,3 +6,6 @@ dist/
 build/
 .venv/
 .env
+_site/
+docs/examples/
+.DS_Store

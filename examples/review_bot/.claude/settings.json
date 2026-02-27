@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "pattern": "git commit",
+        "command": "echo 'HOOK: commit detected — run /review-bot to trigger code review'"
+      },
+      {
+        "matcher": "Write|Edit",
+        "pattern": "review_bot/.*\\.py$",
+        "command": "cd \"$(git rev-parse --show-toplevel)\" && python -m pytest tests/ -x -q 2>&1 | tail -5"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "pattern": "git commit",
+        "command": "input=$(cat) && branch=$(git branch --show-current) && [ \"$branch\" != 'main' ] || (echo 'BLOCKED: Do not commit to main' && exit 1)"
+      }
+    ]
+  }
+}

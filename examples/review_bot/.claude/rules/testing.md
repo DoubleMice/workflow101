@@ -1,0 +1,4 @@
+- Run `pytest tests/ -x -q` after any code change
+- All tests must pass before committing
+- New features must include tests
+- Test edge cases: empty input, null values, boundary conditions

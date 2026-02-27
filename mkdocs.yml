@@ -1,0 +1,93 @@
+site_name: "Workflow101：AI Agent 工作流编排实战"
+site_description: 项目驱动的 AI Agent 工作流编排教程
+site_author: doublemice
+repo_url: https://github.com/doublemice/workflow101
+repo_name: workflow101
+
+docs_dir: docs
+site_dir: _site
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  font:
+    text: Noto Sans SC
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+plugins:
+  - search:
+      lang:
+        - zh
+        - en
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - 首页: index.md
+  - 教程:
+      - Ch0 生态概览: 00_ecosystem.md
+      - Ch1 项目规划: 01_planning.md
+      - Ch2 项目脚手架: 02_scaffolding.md
+      - Ch3 理解变更: 03_git_diff.md
+      - Ch4 审查团队: 04_agent_design.md
+      - Ch5 并行审查: 05_parallel_review.md
+      - Ch6 报告生成: 06_report.md
+      - Ch7 自动化: 07_automation.md
+      - Ch8 质量保障: 08_testing.md
+      - Ch9 模板库: 09_templates.md
+  - 课后作业:
+      - 作业概览: 10_homework.md
+      - "1: Develop Workflow": 10a_develop_workflow.md
+      - "2: Test Workflow": 10b_test_workflow.md
+      - "3: Security Audit": 10c_audit_workflow.md
+      - "4: Compliance Test": 10d_compliance_workflow.md
+  - 示例代码:
+      - Skill 模板: examples/commands/README.md
+      - Hook 配置: examples/hooks/README.md
+      - MCP 配置: examples/mcp/README.md
+      - Workflow 编排: examples/workflows/README.md
+      - CI/CD 集成: examples/ci/README.md
+  - 完整教程(单页): tutorial.md
+
+exclude_docs: |
+  .git/
+  .claude/

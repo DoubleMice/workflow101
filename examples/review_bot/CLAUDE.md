@@ -9,25 +9,26 @@ code reviews using multiple specialized agents. Built with Python and typer.
 - typer (CLI framework)
 - subprocess (git operations)
 
-## Code Style
-- Use type hints everywhere
-- Docstrings: Google style
-- Max line length: 88 (black default)
-- Import order: stdlib → third-party → local (isort)
+## Architecture
+- Python 代码 = 工具层（diff 解析、报告生成）
+- `.claude/skills/review-bot/SKILL.md` = 编排层（通过 Claude Code Task tool 调度）
+- `.claude/agents/*.md` = Agent 定义（每个 agent 的角色和 prompt，含 YAML frontmatter）
+- `.claude/rules/*.md` = 项目规则（代码风格、测试要求，自动加载）
 
 ## Project Structure
-```
 review_bot/
-├── cli.py           # CLI entry point
+├── cli.py           # CLI entry point (diff/report subcommands)
 ├── diff_parser.py   # Git diff parsing
-├── agents/          # Review agents
+├── scheduler.py     # Result aggregation utilities
 ├── reporter.py      # Report generation
-└── config.py        # Configuration
-```
+└── agents/
+    ├── base.py      # Base agent definition
+    └── registry.py  # Agent registry
 
 ## Commands
-- Run: `python -m review_bot review`
-- Test: `pytest tests/`
+- Diff: `review-bot diff [TARGET] [--repo PATH]`
+- Skill: `/review-bot HEAD~3` or `/review-bot HEAD~5 --repo /path/to/repo`
+- Test: `pytest tests/ -x -q`
 - Lint: `ruff check .`
 - Format: `black .`
 

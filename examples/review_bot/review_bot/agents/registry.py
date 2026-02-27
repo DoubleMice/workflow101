@@ -1,4 +1,9 @@
-"""Pre-configured review agents."""
+"""Pre-configured review agents.
+
+NOTE: Runtime agent definitions used by Claude Code are in .claude/agents/*.md.
+This module serves as the Python-side reference for testing and programmatic access.
+Keep prompt templates in sync with .claude/agents/ files.
+"""
 from .base import ReviewAgent
 
 SECURITY_AGENT = ReviewAgent(
@@ -28,12 +33,8 @@ Check for:
 Diff to review:
 {diff}
 
-For each issue found, respond in this exact format:
-- severity: critical | warning | info
-- file: <file path>
-- line: <line number or null>
-- description: <what's wrong>
-- suggestion: <how to fix>
+For each issue found, respond with one JSON object per line (no code fences):
+{{"severity":"critical|warning|info","file":"<path>","line":<number or null>,"description":"<what's wrong>","suggestion":"<how to fix>"}}
 
 If no security issues found, respond with: "No security issues detected."
 """,
@@ -64,12 +65,8 @@ Check for:
 Diff to review:
 {diff}
 
-For each issue, use this format:
-- severity: critical | warning | info
-- file: <file path>
-- line: <line number or null>
-- description: <what's wrong>
-- suggestion: <how to fix>
+For each issue, respond with one JSON object per line (no code fences):
+{{"severity":"critical|warning|info","file":"<path>","line":<number or null>,"description":"<what's wrong>","suggestion":"<how to fix>"}}
 
 If no performance issues found, respond with: "No performance issues detected."
 """,
@@ -100,12 +97,8 @@ Check for:
 Diff to review:
 {diff}
 
-For each issue, use this format:
-- severity: critical | warning | info
-- file: <file path>
-- line: <line number or null>
-- description: <what's wrong>
-- suggestion: <how to fix>
+For each issue, respond with one JSON object per line (no code fences):
+{{"severity":"critical|warning|info","file":"<path>","line":<number or null>,"description":"<what's wrong>","suggestion":"<how to fix>"}}
 
 If no style issues found, respond with: "No style issues detected."
 """,
@@ -136,12 +129,8 @@ Check for:
 Diff to review:
 {diff}
 
-For each issue, use this format:
-- severity: critical | warning | info
-- file: <file path>
-- line: <line number or null>
-- description: <what's wrong>
-- suggestion: <how to fix>
+For each issue, respond with one JSON object per line (no code fences):
+{{"severity":"critical|warning|info","file":"<path>","line":<number or null>,"description":"<what's wrong>","suggestion":"<how to fix>"}}
 
 If no logic issues found, respond with: "No logic issues detected."
 """,
