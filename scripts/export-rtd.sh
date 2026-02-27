@@ -44,7 +44,7 @@ cmd_build() {
     info "同步 examples 到 docs/examples 以解决跨平台软链接问题..."
     python3 scripts/sync_examples.py
     info "构建静态站点..."
-    mkdocs build --clean
+    python3 -m mkdocs build --clean
     info "构建完成 → _site/"
     echo ""
     echo "  文件数: $(find _site -name '*.html' | wc -l | tr -d ' ') 个 HTML 页面"
@@ -61,7 +61,7 @@ cmd_serve() {
     echo "  地址: http://127.0.0.1:8000"
     echo "  按 Ctrl+C 停止"
     echo ""
-    mkdocs serve
+    python3 -m mkdocs serve
 }
 
 cmd_clean() {

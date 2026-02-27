@@ -24,7 +24,7 @@ $ review-bot review --diff HEAD~1
 
 听起来不复杂？但要把它做好，你会用到 Claude Code 几乎所有的编排能力。
 
-![pic1](../assets/Gemini_Generated_Image_auddihauddihaudd.png)
+![pic1](assets/Gemini_Generated_Image_auddihauddihaudd.png)
 
 
 ## 适合谁？
