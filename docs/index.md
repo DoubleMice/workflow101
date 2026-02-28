@@ -20,7 +20,7 @@ AI: [你已经问累了]
 ## 最终效果
 
 ```
-$ review-bot review --diff HEAD~1
+> /review-bot HEAD~1
 
 🔍 解析 diff: 3 files changed, 47 insertions(+), 12 deletions(-)
 
@@ -35,7 +35,7 @@ $ review-bot review --diff HEAD~1
 Verdict: NEEDS_WORK (1 critical issue)
 ```
 
-一行命令，背后发生的事：
+一条 Skill 指令，背后发生的事：
 
 1. 解析 git diff，理解"改了什么"
 2. 同时派出 4 个专业审查 agent（安全 / 性能 / 风格 / 逻辑）

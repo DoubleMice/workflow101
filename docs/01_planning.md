@@ -207,7 +207,7 @@ AI: 强烈建议统一为 5 个字段：severity / file / line / description / s
 ```
 ┌───────────────────────────────────────────┐
 │              CLI (typer)                   │
-│           review-bot review                │
+│           /review-bot                     │
 └─────────────────────┬─────────────────────┘
                       │
                       ▼

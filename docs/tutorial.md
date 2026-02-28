@@ -12,10 +12,10 @@
 ## 我们要构建什么？
 
 ```
-$ review-bot review --diff HEAD~1
+> /review-bot HEAD~1
 ```
 
-一行命令，背后发生的事：
+一条 Skill 指令，背后发生的事：
 
 1. 解析 git diff，理解"改了什么"
 2. 同时派出 4 个专业审查 agent（安全 / 性能 / 风格 / 逻辑）
@@ -807,7 +807,7 @@ AI: 强烈建议统一为 5 个字段：severity / file / line / description / s
 ```
 ┌───────────────────────────────────────────┐
 │              CLI (typer)                   │
-│           review-bot review                │
+│           /review-bot                     │
 └─────────────────────┬─────────────────────┘
                       │
                       ▼
