@@ -145,6 +145,7 @@ def render_markdown(report: Report) -> str:
 
 ```python
 # review_bot/cli.py 中新增 report 子命令
+# 需要在文件顶部添加: import json, sys
 
 @app.command()
 def report(

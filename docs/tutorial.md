@@ -454,7 +454,7 @@ Claude Code 通过 Task tool 的 `subagent_type` 参数指定 subagent 类型：
 
 Agent 的"工作记忆"。所有的对话历史、读过的代码、工具调用结果，都会占用上下文窗口的空间。
 
-Claude Code 的上下文窗口大小取决于底层模型（目前最大 200K token）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
+Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
 
 > 💡 **Tip**: 当上下文快满时，Claude Code 会自动压缩（compact）。你也可以手动执行 `/compact` 来释放空间。
 
@@ -1410,10 +1410,8 @@ Explore Agent 不是空手去探索的，它有一套专用工具：
 | Glob | 按模式匹配文件路径 | `**/*.py` 找所有 Python 文件 |
 | Grep | 在文件内容中搜索 | 搜索 `def parse_diff` 找到函数定义 |
 | Read | 读取文件内容 | 读取 `cli.py` 理解入口逻辑 |
-| WebFetch | 获取网页内容 | 查阅外部文档 |
-| WebSearch | 搜索网页 | 搜索技术方案 |
 
-注意：Explore Agent **没有** Edit、Write、Bash 这些能修改文件或执行命令的工具。这是"只读"约束的硬性保证。
+注意：Explore Agent **没有** Edit、Write、Bash、WebFetch、WebSearch 这些能修改文件、执行命令或访问网络的工具。这是"只读代码探索"约束的硬性保证。
 
 ### 3.2.2 什么时候用 Explore Agent？
 
@@ -1426,7 +1424,7 @@ Explore Agent 不是空手去探索的，它有一套专用工具：
 
 - 简单的文件查找（直接用 Glob 更快）
 - 你已经知道要看哪个文件（直接用 Read）
-- 需要执行命令才能获取信息（用 Bash agent）
+- 需要执行命令才能获取信息（直接用 Bash tool）
 
 > 💡 **Tip**: Explore Agent 适合"开放式探索"——你不确定答案在哪里，需要 AI 自己去翻。如果你已经知道目标文件，直接读取比派 Explore Agent 更快。
 
@@ -2155,7 +2153,7 @@ If no issues found, respond with: "[无问题时的标准回复]"
 
 ### 5.2.2 前台 vs 后台 Agent
 
-Claude Code 的 Task tool 有一个 `run_in_background` 参数：
+Claude Code 的 Task tool 支持通过 `run_in_background` 参数将 subagent 放到后台执行：
 
 - **前台（默认）**：主 agent 等待 subagent 完成后才继续。适合需要结果才能进行下一步的场景。
 - **后台**：主 agent 不等待，继续做其他事。适合"发出去就行，结果晚点再看"的场景。
@@ -2545,6 +2543,7 @@ def render_markdown(report: Report) -> str:
 
 ```python
 # review_bot/cli.py 中新增 report 子命令
+# 需要在文件顶部添加: import json, sys
 
 @app.command()
 def report(
@@ -2828,6 +2827,11 @@ Skill 的创建规则很简单：
 **`.claude/skills/review-bot/SKILL.md`**:
 
 ```markdown
+---
+name: review-bot
+description: Run parallel C/C++ code review with 4 specialized agents
+---
+
 Run a C/C++ code review workflow. Follow each step exactly.
 
 ## Step 1: Get the diff
@@ -2969,7 +2973,7 @@ Hook 出问题时不太好排查——它在后台静默执行，没有明显的
       {
         "matcher": "Write|Edit",
         "pattern": "\\.py$",
-        "command": "input=$(cat) && file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log"
+        "command": "input=$(cat) && file_path=$(echo \"$input\" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log"
       }
     ]
   }
@@ -3063,7 +3067,7 @@ examples\commands\install.bat C:\projects\my-app
 - PreToolUse 可以拦截危险操作，PostToolUse 可以自动后处理
 - Skills 是可复用的 prompt 模板：`.claude/skills/<name>/SKILL.md` 创建，用 `/name` 触发
 - Skill 用 `$ARGUMENTS` 接收参数，第一行写目标，后面列具体步骤
-- 三个自定义目录各有分工：`commands/`（手动触发）、`skills/`（自动应用）、`agents/`（subagent 定义）
+- 三个自定义目录各有分工：`skills/`（手动或自动触发）、`agents/`（subagent 定义）、`rules/`（自动加载规则）
 
 ---
 
@@ -3223,12 +3227,12 @@ def test_parse_diff_file_count():
 
 def test_parse_diff_additions():
     result = parse_diff(SAMPLE_DIFF)
-    assert result.files[0].additions == 3  # sys, json, print
+    assert result.files[0].additions == 3  # stdlib.h, string.h, printf
 
 
 def test_parse_diff_deletions():
     result = parse_diff(SAMPLE_DIFF)
-    assert result.files[0].deletions == 1  # pass
+    assert result.files[0].deletions == 1  # return;
 
 
 def test_parse_diff_empty():
@@ -3345,17 +3349,22 @@ def test_each_agent_has_boundary():
 **tests/test_scheduler.py**:
 
 ```python
-"""Tests for agent output parsing and result aggregation."""
-from review_bot.scheduler import parse_agent_output, ReviewSession
+"""Tests for result aggregation and agent output parsing."""
+from review_bot.agents.base import ReviewIssue
+from review_bot.scheduler import (
+    AgentResult,
+    ReviewSession,
+    parse_agent_output,
+)
 
 
-def test_parse_valid_json_lines():
+def test_parse_agent_output_with_json_issues():
     """Extract JSON issues from mixed text output."""
-    raw = """Reviewing the code for security issues...
-{"severity":"critical","file":"parser.c","line":42,"description":"buffer overflow","suggestion":"use bounded read"}
-Some explanation text here.
-{"severity":"warning","file":"conn.c","line":10,"description":"unchecked return","suggestion":"check retval"}
-No more issues found."""
+    raw = """Here are the security issues found:
+{"severity": "critical", "file": "parser.c", "line": 10, "description": "Buffer overflow", "suggestion": "Use bounded read"}
+Some other text
+{"severity": "warning", "file": "conn.c", "line": null, "description": "Unchecked return", "suggestion": "Check retval"}
+"""
     result = parse_agent_output("security", raw)
     assert result.agent_name == "security"
     assert len(result.issues) == 2
@@ -3363,29 +3372,31 @@ No more issues found."""
     assert result.issues[1].file_path == "conn.c"
 
 
-def test_parse_no_issues():
+def test_parse_agent_output_no_issues():
     """Agent found nothing — should return empty list."""
     raw = "No security issues detected."
     result = parse_agent_output("security", raw)
     assert len(result.issues) == 0
-    assert result.error is None
 
 
-def test_parse_invalid_json_skipped():
+def test_parse_agent_output_invalid_json():
     """Malformed JSON lines should be silently skipped."""
-    raw = '{"severity":"critical","file":"a.c"\n{"broken json\nnot json at all'
-    result = parse_agent_output("security", raw)
-    # Both lines starting with { are invalid, should be skipped
+    raw = "{not valid json}\n{also bad"
+    result = parse_agent_output("test", raw)
     assert len(result.issues) == 0
 
 
-def test_review_session_has_critical():
-    """ReviewSession.has_critical aggregates across agents."""
-    r1 = parse_agent_output("security", '{"severity":"critical","file":"a.c","line":1,"description":"x","suggestion":"y"}')
-    r2 = parse_agent_output("style", "No style issues detected.")
+def test_review_session_aggregation():
+    """ReviewSession aggregates across agents."""
+    r1 = AgentResult(agent_name="security", issues=[
+        ReviewIssue("critical", "a.c", 1, "desc", "fix"),
+    ])
+    r2 = AgentResult(agent_name="style", issues=[
+        ReviewIssue("info", "b.c", 2, "desc2", "fix2"),
+    ])
     session = ReviewSession(results=[r1, r2])
+    assert len(session.all_issues) == 2
     assert session.has_critical is True
-    assert len(session.all_issues) == 1
 ```
 
 这组测试覆盖了三个关键场景：正常提取、空输出、畸形 JSON。注意 `test_parse_invalid_json_skipped` ——LLM 有时会输出不完整的 JSON，解析器必须容错而不是崩溃。

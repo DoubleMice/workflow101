@@ -28,12 +28,12 @@ def test_parse_diff_file_count():
 
 def test_parse_diff_additions():
     result = parse_diff(SAMPLE_DIFF)
-    assert result.files[0].additions == 3  # sys, json, print
+    assert result.files[0].additions == 3  # stdlib.h, string.h, printf
 
 
 def test_parse_diff_deletions():
     result = parse_diff(SAMPLE_DIFF)
-    assert result.files[0].deletions == 1  # pass
+    assert result.files[0].deletions == 1  # return;
 
 
 def test_parse_diff_empty():

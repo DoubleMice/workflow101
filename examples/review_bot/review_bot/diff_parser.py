@@ -55,6 +55,8 @@ def get_diff(target: str = "HEAD~1", repo: str | None = None) -> str:
         cmd,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         cwd=repo,
     )
     if result.returncode != 0:

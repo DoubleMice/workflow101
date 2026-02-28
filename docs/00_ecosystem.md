@@ -284,7 +284,7 @@ Claude Code 通过 Task tool 的 `subagent_type` 参数指定 subagent 类型：
 
 Agent 的"工作记忆"。所有的对话历史、读过的代码、工具调用结果，都会占用上下文窗口的空间。
 
-Claude Code 的上下文窗口大小取决于底层模型（目前最大 200K token）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
+Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
 
 > 💡 **Tip**: 当上下文快满时，Claude Code 会自动压缩（compact）。你也可以手动执行 `/compact` 来释放空间。
 

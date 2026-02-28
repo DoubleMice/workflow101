@@ -75,7 +75,7 @@
 
 ### 5.2.2 前台 vs 后台 Agent
 
-Claude Code 的 Task tool 有一个 `run_in_background` 参数：
+Claude Code 的 Task tool 支持通过 `run_in_background` 参数将 subagent 放到后台执行：
 
 - **前台（默认）**：主 agent 等待 subagent 完成后才继续。适合需要结果才能进行下一步的场景。
 - **后台**：主 agent 不等待，继续做其他事。适合"发出去就行，结果晚点再看"的场景。

@@ -61,10 +61,8 @@ Explore Agent 不是空手去探索的，它有一套专用工具：
 | Glob | 按模式匹配文件路径 | `**/*.py` 找所有 Python 文件 |
 | Grep | 在文件内容中搜索 | 搜索 `def parse_diff` 找到函数定义 |
 | Read | 读取文件内容 | 读取 `cli.py` 理解入口逻辑 |
-| WebFetch | 获取网页内容 | 查阅外部文档 |
-| WebSearch | 搜索网页 | 搜索技术方案 |
 
-注意：Explore Agent **没有** Edit、Write、Bash 这些能修改文件或执行命令的工具。这是"只读"约束的硬性保证。
+注意：Explore Agent **没有** Edit、Write、Bash、WebFetch、WebSearch 这些能修改文件、执行命令或访问网络的工具。这是"只读代码探索"约束的硬性保证。
 
 ### 3.2.2 什么时候用 Explore Agent？
 
@@ -77,7 +75,7 @@ Explore Agent 不是空手去探索的，它有一套专用工具：
 
 - 简单的文件查找（直接用 Glob 更快）
 - 你已经知道要看哪个文件（直接用 Read）
-- 需要执行命令才能获取信息（用 Bash agent）
+- 需要执行命令才能获取信息（直接用 Bash tool）
 
 > 💡 **Tip**: Explore Agent 适合"开放式探索"——你不确定答案在哪里，需要 AI 自己去翻。如果你已经知道目标文件，直接读取比派 Explore Agent 更快。
 

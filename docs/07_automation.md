@@ -159,6 +159,11 @@ Skill 的创建规则很简单：
 **`.claude/skills/review-bot/SKILL.md`**:
 
 ```markdown
+---
+name: review-bot
+description: Run parallel C/C++ code review with 4 specialized agents
+---
+
 Run a C/C++ code review workflow. Follow each step exactly.
 
 ## Step 1: Get the diff
@@ -300,7 +305,7 @@ Hook 出问题时不太好排查——它在后台静默执行，没有明显的
       {
         "matcher": "Write|Edit",
         "pattern": "\\.py$",
-        "command": "input=$(cat) && file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log"
+        "command": "input=$(cat) && file_path=$(echo \"$input\" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log"
       }
     ]
   }
@@ -394,7 +399,7 @@ examples\commands\install.bat C:\projects\my-app
 - PreToolUse 可以拦截危险操作，PostToolUse 可以自动后处理
 - Skills 是可复用的 prompt 模板：`.claude/skills/<name>/SKILL.md` 创建，用 `/name` 触发
 - Skill 用 `$ARGUMENTS` 接收参数，第一行写目标，后面列具体步骤
-- 三个自定义目录各有分工：`commands/`（手动触发）、`skills/`（自动应用）、`agents/`（subagent 定义）
+- 三个自定义目录各有分工：`skills/`（手动或自动触发）、`agents/`（subagent 定义）、`rules/`（自动加载规则）
 
 ---
 

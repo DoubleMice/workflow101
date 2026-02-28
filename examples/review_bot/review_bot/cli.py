@@ -1,8 +1,18 @@
 """CLI entry point for Review Bot — utility layer for Claude Code skills."""
 import json
+import os
 import sys
 
 import typer
+
+# Windows: force UTF-8 for stdin/stdout/stderr
+if sys.platform == "win32":
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stdin, "reconfigure"):
+        sys.stdin.reconfigure(encoding="utf-8", errors="replace")
 
 from .diff_parser import get_diff, parse_diff
 from .agents.base import ReviewIssue
