@@ -2726,20 +2726,20 @@ Claude Code 的 Hooks 是一种**事件驱动的自动化机制**。你可以配
 
 ### 7.2.2 matcher 和 pattern 怎么匹配？
 
-每条 Hook 规则有两个过滤字段，必须同时命中才会触发：
+每条 Hook 规则通过 `matcher` 对象过滤，包含两个字段，必须同时命中才会触发：
 
 | 字段 | 匹配对象 | 示例 |
 |------|---------|------|
-| `matcher` | 工具名称（正则） | `"Bash"`、`"Write\|Edit"` |
-| `pattern` | 工具的关键参数（正则） | `"git commit"`、`"\\.py$"` |
+| `tools` | 工具名称列表（带 Tool 后缀） | `["BashTool"]`、`["WriteTool", "EditTool"]` |
+| `input_contains` | 工具输入中包含的字符串 | `"git commit"`、`".py"` |
 
-`pattern` 匹配的内容取决于工具类型：
+`input_contains` 匹配的内容取决于工具类型：
 
-- **Bash** → 匹配 `command` 字段（即 shell 命令字符串）
-- **Write / Edit** → 匹配 `file_path` 字段（即操作的文件路径）
-- **Read / Glob / Grep** → 同样匹配路径或 pattern 参数
+- **BashTool** → 匹配 `command` 字段（即 shell 命令字符串）
+- **WriteTool / EditTool** → 匹配 `file_path` 字段（即操作的文件路径）
+- **ReadTool / GlobTool / GrepTool** → 同样匹配路径或 pattern 参数
 
-举个例子，`"matcher": "Bash", "pattern": "git commit"` 的意思是：当 Claude Code 通过 Bash 工具执行的命令中包含 `git commit` 时触发。而 `"matcher": "Write|Edit", "pattern": "\\.py$"` 的意思是：当 Claude Code 写入或编辑 `.py` 文件时触发。
+举个例子，`"tools": ["BashTool"], "input_contains": "git commit"` 的意思是：当 Claude Code 通过 Bash 工具执行的命令中包含 `git commit` 时触发。而 `"tools": ["WriteTool", "EditTool"], "input_contains": ".py"` 的意思是：当 Claude Code 写入或编辑 `.py` 文件时触发。
 
 ### 7.2.3 Skills 是什么？
 
@@ -2773,15 +2773,12 @@ Claude Code 提供了三个目录来扩展能力，容易混淆：
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "echo 'HOOK: Auto-review triggered after commit'"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "echo 'HOOK: Auto-review triggered after commit'" }]
+    }
+  ]
 }
 ```
 
@@ -2791,15 +2788,12 @@ Claude Code 提供了三个目录来扩展能力，容易混淆：
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "review-bot diff HEAD~1 2>/dev/null | head -1 || true"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "review-bot diff HEAD~1 2>/dev/null | head -1 || true" }]
+    }
+  ]
 }
 ```
 
@@ -2928,15 +2922,12 @@ Output a markdown report sorted by severity.
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "\\.py$",
-        "command": "file_path=$(cat | jq -r '.tool_input.file_path // empty') && [ -n \"$file_path\" ] && black \"$file_path\" 2>/dev/null || true"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": ".py" },
+      "hooks": [{ "type": "command", "command": "file_path=$(cat | jq -r '.tool_input.file_path // empty') && [ -n \"$file_path\" ] && black \"$file_path\" 2>/dev/null || true" }]
+    }
+  ]
 }
 ```
 
@@ -2946,15 +2937,12 @@ Hook 通过 stdin 接收 JSON 上下文（见 Step 4），用 `jq` 提取 `file_
 
 ```json
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "branch=$(git branch --show-current) && [ \"$branch\" != 'main' ] || (echo 'BLOCKED: Do not commit to main' && exit 1)"
-      }
-    ]
-  }
+  "PreToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "branch=$(git branch --show-current) && [ \"$branch\" != 'main' ] || (echo 'BLOCKED: Do not commit to main' && exit 1)" }]
+    }
+  ]
 }
 ```
 
@@ -2968,15 +2956,12 @@ Hook 出问题时不太好排查——它在后台静默执行，没有明显的
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "\\.py$",
-        "command": "input=$(cat) && file_path=$(echo \"$input\" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": ".py" },
+      "hooks": [{ "type": "command", "command": "input=$(cat) && file_path=$(echo \"$input\" | jq -r '.tool_input.file_path // empty') && echo \"$(date): Hook triggered for $file_path\" >> /tmp/hook-debug.log && black \"$file_path\" 2>&1 | tee -a /tmp/hook-debug.log" }]
+    }
+  ]
 }
 ```
 
@@ -3471,15 +3456,12 @@ def test_full_pipeline_fail():
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "review_bot/.*\\.py$",
-        "command": "pytest tests/ -x -q 2>&1 | tail -5"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": "review_bot/" },
+      "hooks": [{ "type": "command", "command": "pytest tests/ -x -q 2>&1 | tail -5" }]
+    }
+  ]
 }
 ```
 

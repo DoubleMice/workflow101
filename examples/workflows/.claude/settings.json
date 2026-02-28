@@ -1,23 +1,18 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git push.*main",
-        "command": "echo 'BLOCKED: Do not push to main directly. Use a feature branch.' && exit 1"
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "\\.py$",
-        "command": "black \"$(echo $(cat) | jq -r '.tool_input.file_path // empty')\" 2>/dev/null || true"
-      },
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "echo '✓ Commit detected — consider running /preflight before pushing'"
-      }
-    ]
-  }
+  "PreToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git push" },
+      "hooks": [{ "type": "command", "command": "echo 'BLOCKED: Do not push to main directly. Use a feature branch.' && exit 1" }]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": ".py" },
+      "hooks": [{ "type": "command", "command": "black \"$(echo $(cat) | jq -r '.tool_input.file_path // empty')\" 2>/dev/null || true" }]
+    },
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "echo 'Commit detected - consider running /preflight before pushing'" }]
+    }
+  ]
 }

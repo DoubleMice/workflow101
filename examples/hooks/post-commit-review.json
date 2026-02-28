@@ -1,11 +1,8 @@
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "review-bot diff HEAD~1"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "review-bot diff HEAD~1" }]
+    }
+  ]
 }

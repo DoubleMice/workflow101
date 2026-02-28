@@ -18,7 +18,7 @@ Hook 配置写在项目根目录的 `.claude/settings.json` 中。
 
 ### 方式一：直接复制
 
-选一个 JSON 文件，把 `hooks` 字段复制到你项目的 `.claude/settings.json`：
+选一个 JSON 文件，把内容复制到你项目的 `.claude/settings.json`：
 
 ```bash
 # 如果项目还没有 .claude 目录，先创建
@@ -34,27 +34,22 @@ cp examples/hooks/auto-format.json .claude/settings.json
 
 ```json
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "pattern": "git commit",
-        "command": "branch=$(git branch --show-current) && [ \"$branch\" != 'main' ] || (echo 'BLOCKED: Do not commit to main' && exit 1)"
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "\\.py$",
-        "command": "black $FILE_PATH 2>/dev/null || true"
-      },
-      {
-        "matcher": "Write|Edit",
-        "pattern": "review_bot/.*\\.py$",
-        "command": "pytest tests/ -x -q 2>&1 | tail -5"
-      }
-    ]
-  }
+  "PreToolUse": [
+    {
+      "matcher": { "tools": ["BashTool"], "input_contains": "git commit" },
+      "hooks": [{ "type": "command", "command": "branch=$(git branch --show-current) && [ \"$branch\" != 'main' ] || (echo 'BLOCKED: Do not commit to main' && exit 1)" }]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": ".py" },
+      "hooks": [{ "type": "command", "command": "black $FILE_PATH 2>/dev/null || true" }]
+    },
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": "review_bot/" },
+      "hooks": [{ "type": "command", "command": "pytest tests/ -x -q 2>&1 | tail -5" }]
+    }
+  ]
 }
 ```
 

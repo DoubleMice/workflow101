@@ -412,15 +412,12 @@ def test_full_pipeline_fail():
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "pattern": "review_bot/.*\\.py$",
-        "command": "pytest tests/ -x -q 2>&1 | tail -5"
-      }
-    ]
-  }
+  "PostToolUse": [
+    {
+      "matcher": { "tools": ["WriteTool", "EditTool"], "input_contains": "review_bot/" },
+      "hooks": [{ "type": "command", "command": "pytest tests/ -x -q 2>&1 | tail -5" }]
+    }
+  ]
 }
 ```
 
