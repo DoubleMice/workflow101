@@ -1,6 +1,6 @@
 # Ch3: 解析 Git Diff — 用 Explore Agent 读懂变更
 
-> 审查代码的第一步不是"找 bug"，而是"理解变更"。
+> 审查代码，先理解变更，再找问题。
 >
 > | 章节 | 关键词 |
 > |:-----|:------|
@@ -24,12 +24,6 @@
 - Dataclass（Python 数据类）
 - Subprocess（子进程，Python 中调用外部命令的模块）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Explore Agent | 想让 AI 分析代码但怕它手痒改坏东西——只读模式，只看不动 |
-
 ## 3.1 场景引入
 
 你打开一个 PR，里面改了 47 个文件、1200 行代码。你的第一反应是什么？
@@ -42,7 +36,7 @@
 
 ---
 
-## 3.2 设计思维：Explore Agent 是什么？
+## 3.2 Explore Agent 是什么？
 
 在 Claude Code 中，Explore Agent 是一种专门用来**探索代码库**的 subagent。它的特点：
 
@@ -236,8 +230,6 @@ def parse_diff(raw_diff: str) -> DiffResult:
     return result
 ```
 
-> 💡 **为什么用 dataclass？** 比起返回 dict，dataclass 有类型提示、自动生成 `__repr__`，还能加 property 做计算属性。后面 agent 拿到这个数据结构，用起来更方便。
-
 ### 3.3.3 边界情况：真实世界的 diff 没那么干净
 
 上面的解析器能处理最常见的情况，但真实项目中你会遇到这些边界：
@@ -307,9 +299,7 @@ review-bot HEAD~3 --repo /path/to/other/repo
 
 ## 3.5 小结
 
-- Explore Agent 是 Claude Code 的"侦察兵"，只读不写，上下文隔离
-- Git diff 解析是 Code Review 的第一步：先理解变更，再做审查
-- 用 dataclass 定义结构化数据，比 dict 更安全、更好用
+diff 解析器是整个 Review Bot 的数据入口，后面所有 agent 的审查都建立在这份结构化数据上。先把核心路径跑通，边界情况留给 Ch8 的测试来暴露。
 
 ---
 

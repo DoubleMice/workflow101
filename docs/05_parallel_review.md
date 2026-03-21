@@ -23,13 +23,6 @@
 - Context Isolation（上下文隔离，每个 subagent 拥有独立的对话上下文）
 - Timeout（超时，等待操作完成的最大时间限制）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Ch5 Fan-out/Fan-in | 4 个 Agent 串行太慢——同时派出去，最后统一收结果 |
-| Subagent | 子任务的中间过程塞满主 Agent 的记忆——独立上下文，只带结论回来 |
-
 ## 5.1 场景引入
 
 上一章设计了四个审查 agent。如果让它们一个接一个地跑：
@@ -51,7 +44,7 @@
 
 ---
 
-## 5.2 设计思维：Claude Code 的并行执行机制
+## 5.2 Claude Code 的并行执行机制
 
 ### 5.2.1 怎么实现并行？
 
@@ -325,10 +318,7 @@ Task(subagent_type="general-purpose", prompt="...", run_in_background=True)
 
 ## 5.5 小结
 
-- 并行执行的关键：在同一条消息中发起多个 Task 调用
-- Fan-out / Fan-in 是最常用的并行模式
-- 每个 subagent 上下文隔离，互不干扰
-- 并发数建议不超过 4 个
+Fan-out/Fan-in 的实现就是在同一条消息里发起多个 Task 调用，剩下的事交给 Claude Code。上下文隔离确保了 agent 之间不会互相污染，并发上限控制在 4 个以内就够用。
 
 ---
 

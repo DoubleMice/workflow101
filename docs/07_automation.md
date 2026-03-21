@@ -24,13 +24,6 @@
 - Regex（Regular Expression，正则表达式，文本模式匹配语法）
 - Matcher（匹配器，Hook 中用于筛选目标工具的过滤条件）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Hook | 每次提交都要手动跑审查，总是忘——事件触发，commit 一提交自动执行 |
-| Skill | 同样的审查流程每次都要重新描述一遍——封装成 `/review-bot` 一条命令搞定 |
-
 ## 7.1 场景引入
 
 到这一步，Review Bot 已经能跑了。但每次都要手动输入 `/review-bot`，就像有了洗碗机却还要手动按开关——能用，但不够爽。
@@ -41,7 +34,7 @@
 
 ---
 
-## 7.2 设计思维：Hooks 是什么？
+## 7.2 Hooks 是什么？
 
 Claude Code 的 Hooks 是一种**事件驱动的自动化机制**。你可以配置：当某个工具被调用时，自动执行一段 shell 命令。
 
@@ -379,12 +372,7 @@ examples\commands\install.bat C:\projects\my-app
 
 ## 7.5 小结
 
-- Hooks 是事件驱动的自动化：工具调用前后自动执行 shell 命令
-- Hook 通过 stdin JSON 接收工具调用的上下文信息
-- PreToolUse 可以拦截危险操作，PostToolUse 可以自动后处理
-- Skills 是可复用的 prompt 模板：`.claude/skills/<name>/SKILL.md` 创建，用 `/name` 触发
-- Skill 用 `$ARGUMENTS` 接收参数，第一行写目标，后面列具体步骤
-- 三个自定义目录各有分工：`skills/`（手动或自动触发）、`agents/`（subagent 定义）、`rules/`（自动加载规则）
+Hook 负责"自动跑起来"，Skill 负责"怎么跑"——两者配合，把原来每次都要手动描述的审查流程变成一个 `/review-bot` 搞定。记住那个分工原则：轻量操作放 Hook，重量级编排交给 Skill。
 
 ---
 

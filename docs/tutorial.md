@@ -135,40 +135,40 @@ review-bot/
   - [0.4 核心概念速览](#04)
   - [0.5 Claude Code 快速安装](#05-claude-code)
 - [Ch1: 需求分析 — 用 Plan Agent 想清楚再动手](#ch1-plan-agent)
-  - [1.2 设计思维：为什么要用 AI 做规划？](#12-ai)
+  - [1.2 为什么要用 AI 做规划？](#12-ai)
   - [1.3 实操复现：规划 Code Review Automator](#13-code-review-automator)
   - [1.4 提炼模板：AI 辅助规划的通用流程](#14-ai)
   - [1.5 规划的常见误区](#15)
 - [Ch2: 搭建脚手架 — CLAUDE.md + CLI 一步到位](#ch2-claudemd-cli)
-  - [2.2 设计思维：CLAUDE.md 的三层配置](#22-claudemd)
+  - [2.2 CLAUDE.md 的三层配置](#22-claudemd)
   - [2.3 实操复现：搭建 Review Bot 脚手架](#23-review-bot)
-  - [2.4 设计思维：顺序工作流](#24-sequential-workflow)
-  - [2.5 设计思维：上下文管理](#25)
+  - [2.4 顺序工作流](#24-sequential-workflow)
+  - [2.5 上下文管理](#25)
   - [2.6 提炼模板：CLAUDE.md 配置模板](#26-claudemd)
 - [Ch3: 解析 Git Diff — 用 Explore Agent 读懂变更](#ch3-git-diff-explore-agent)
-  - [3.2 设计思维：Explore Agent 是什么？](#32-explore-agent)
+  - [3.2 Explore Agent 是什么？](#32-explore-agent)
   - [3.3 实操复现：实现 Git Diff 解析](#33-git-diff)
   - [3.4 提炼模板：Explore Agent 使用模式](#34-explore-agent)
 - [Ch4: Agent 设计 — 安全、性能、风格、逻辑四个专家](#ch4-agent)
-  - [4.2 设计思维：Agent = 角色 + 能力 + 约束](#42-agent)
+  - [4.2 Agent = 角色 + 能力 + 约束](#42-agent)
   - [4.3 实操复现：定义四个审查 Agent](#43-agent)
   - [4.4 检查清单精度 vs. LLM 泛化能力](#44-vs-llm)
   - [4.5 提炼模板：Agent Prompt 设计模板](#45-agent-prompt)
 - [Ch5: Fan-out/Fan-in — 四个 Agent 同时开工](#ch5-fan-outfan-in-agent)
-  - [5.2 设计思维：Claude Code 的并行执行机制](#52-claude-code)
+  - [5.2 Claude Code 的并行执行机制](#52-claude-code)
   - [5.3 实操复现：实现并行审查调度](#53)
   - [5.4 提炼模板：Fan-out / Fan-in 模式](#54-fan-out-fan-in)
 - [Ch6: 结果聚合 — 把散装结果变成一份正经报告](#ch6)
-  - [6.2 设计思维：结果聚合的三个层次](#62)
+  - [6.2 结果聚合的三个层次](#62)
   - [6.3 实操复现：实现报告生成器](#63)
   - [6.4 提炼模板：结果聚合模式](#64)
 - [Ch7: Hooks 与 Skills — commit 时自动触发审查](#ch7-hooks-skills-commit)
-  - [7.2 设计思维：Hooks 是什么？](#72-hooks)
+  - [7.2 Hooks 是什么？](#72-hooks)
   - [7.3 实操复现：配置自动审查流水线](#73)
   - [7.4 提炼模板：自动化流水线模式](#74)
 - [Ch8: 测试驱动 — 谁来审查审查者？](#ch8)
-  - [8.2 设计思维：验证优先](#82)
-  - [8.3 设计思维：测试策略](#83)
+  - [8.2 验证优先](#82)
+  - [8.3 测试策略](#83)
   - [8.4 实操复现：为 Review Bot 添加测试](#84-review-bot)
   - [8.5 提炼模板：测试工作流模式](#85)
 - [Ch9: 六种编排模式 — 从一个项目到一套方法论](#ch9)
@@ -454,9 +454,7 @@ Claude Code 通过 Task tool 的 `subagent_type` 参数指定 subagent 类型：
 
 Agent 的"工作记忆"。所有的对话历史、读过的代码、工具调用结果，都会占用上下文窗口的空间。
 
-Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
-
-> 💡 **Tip**: 当上下文快满时，Claude Code 会自动压缩（compact）。你也可以手动执行 `/compact` 来释放空间。
+Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。上下文快满时可以手动执行 `/compact` 释放空间。
 
 ### 0.4.4 MCP（Model Context Protocol）
 
@@ -601,14 +599,7 @@ claude
 
 ## 0.6 小结
 
-快速扫了一遍 AI Coding Agent 的生态：
-
-- AI Coding Agent 和聊天式 AI 的本质区别在于**自主性**
-- 商业产品（Claude Code / Codex CLI / Gemini CLI）各有侧重
-- 开源工具（OpenCode / Aider）和框架（OpenClaw / NanoClaw / NanoBot）提供了更多选择
-- 选 Claude Code 是因为它的 agent 编排能力最完整
-- AI 时代的开发模式：Vibe Coding、TDD with AI、Spec-Driven、Ralph Loop、Plan-then-Code——根据场景混合使用
-- 核心概念：Agent、Subagent、Context Window、MCP、Workflow
+工具选好了，概念对齐了，下一章开始真正动手——先想清楚再写代码。
 
 ---
 
@@ -624,12 +615,6 @@ claude
 - Dataclass（Python 数据类，用装饰器自动生成样板代码）
 - Fan-out/Fan-in（扇出/扇入，并行分发再汇总的模式）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Plan Mode | 写到一半发现架构不对，推倒重来——不如先让 AI 帮你想清楚再动手 |
-
 ## 1.1 场景引入
 
 你接到一个需求："做一个自动代码审查工具"。
@@ -642,7 +627,7 @@ claude
 
 ---
 
-## 1.2 设计思维：为什么要用 AI 做规划？
+## 1.2 为什么要用 AI 做规划？
 
 ### 1.2.1 规划的价值
 
@@ -652,7 +637,7 @@ claude
 
 AI 辅助做法：你描述目标，AI 帮你补盲点。它见过的项目比你多，能提醒你"这里通常会有坑"。
 
-> 关键心态转变：不是让 AI 替你决策，而是让它帮你**想得更全面**。最终拍板的还是你。
+> 让 AI 帮你补盲点，最终拍板的还是你。
 
 ### 1.2.2 Claude Code 的 Plan 模式
 
@@ -716,8 +701,6 @@ claude
 技术栈：Python + typer。
 请先帮我规划，不要写代码。
 ```
-
-> 💡 **Tip**: 最后那句"请先帮我规划，不要写代码"很关键。不加这句，Claude Code 可能直接开始写代码。明确告诉它你要的是规划，不是实现。
 
 ### Step 2: 审视 AI 给出的规划
 
@@ -939,11 +922,7 @@ AI 给的规划基于"通用最佳实践"，但你的项目有自己的约束。
 
 ## 1.6 小结
 
-这一章看起来"没产出"，但做的事最重要：**想清楚再动手**。
-
-- Plan Agent 的核心价值不是替你做决策，而是帮你**想得更全面**
-- 好的规划 = 明确的目标 + 清晰的架构 + 有序的步骤 + 记录在案的决策
-- 不要无脑接受 AI 的第一版方案，追问细节、做取舍才是你的工作
+架构定了，决策记下来了，下一章开始搭脚手架——把规划变成真正能跑的代码。
 
 ---
 
@@ -959,13 +938,6 @@ AI 给的规划基于"通用最佳实践"，但你的项目有自己的约束。
 - Type Hints（类型提示，Python 的静态类型标注）
 - pyproject.toml（Python 项目配置文件，PEP 621 标准）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| CLAUDE.md | AI 每次都在猜你的偏好，反复纠正很累——写一份"入职手册"，启动即生效 |
-| Sequential Workflow | 多个步骤有先后依赖——按顺序串起来，前一步的输出喂给下一步 |
-
 ## 2.1 场景引入
 
 你新招了一个实习生，第一天上班。你会怎么做？
@@ -976,7 +948,7 @@ CLAUDE.md 就是你给 Claude Code 的"入职手册"。没有它，Claude Code �
 
 ---
 
-## 2.2 设计思维：CLAUDE.md 的三层配置
+## 2.2 CLAUDE.md 的三层配置
 
 Claude Code 的配置有三个层级，从大到小：
 
@@ -1253,7 +1225,7 @@ review-bot HEAD~3 --repo /path/to/other/repo
 
 ---
 
-## 2.4 设计思维：顺序工作流（Sequential Workflow）
+## 2.4 顺序工作流（Sequential Workflow）
 
 搭脚手架的过程，其实就是一个**顺序工作流**：
 
@@ -1272,7 +1244,7 @@ review-bot HEAD~3 --repo /path/to/other/repo
 
 ---
 
-## 2.5 设计思维：上下文管理 — 你最宝贵的资源
+## 2.5 上下文管理 — 你最宝贵的资源
 
 Claude Code 的上下文窗口是你最宝贵的资源。**上下文越满，性能越差**——这是官方文档反复强调的核心原则。
 
@@ -1297,7 +1269,7 @@ Claude Code 的上下文窗口是你最宝贵的资源。**上下文越满，性
 
 这也是为什么 subagent 的上下文隔离那么重要（Ch3 和 Ch5 会详细讲）。Explore Agent 去翻了 100 个文件，这些内容不会出现在主 agent 的上下文里——主 agent 只收到最终结论。
 
-> 💡 **Tip**: 养成习惯——每完成一个阶段性任务，考虑是否需要 `/clear` 或 `/compact`。上下文管理不是高级技巧，而是日常卫生。
+> 💡 **Tip**: 养成习惯——每完成一个阶段性任务，考虑是否需要 `/clear` 或 `/compact`。上下文管理是日常卫生，得主动做。
 
 ---
 
@@ -1354,10 +1326,7 @@ Step 3: [后续处理] → 验证 ✓
 
 ## 2.7 小结
 
-- CLAUDE.md 是你和 AI 之间的"契约"，写得越清楚，AI 越靠谱
-- 三层配置（全局 → 项目 → 目录）让你能精细控制不同场景
-- 上下文窗口是最宝贵的资源——用 `/clear`、`/compact`、`/rewind` 主动管理
-- 顺序工作流是最基础的编排模式：一步接一步，每步验证
+CLAUDE.md 写得越具体，后面省的时间越多——这一章的脚手架虽然简单，但它是后续所有章节的地基。上下文管理从现在就要养成习惯，别等窗口撑满再想起来。
 
 ---
 
@@ -1373,12 +1342,6 @@ Step 3: [后续处理] → 验证 ✓
 - Dataclass（Python 数据类）
 - Subprocess（子进程，Python 中调用外部命令的模块）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Explore Agent | 想让 AI 分析代码但怕它手痒改坏东西——只读模式，只看不动 |
-
 ## 3.1 场景引入
 
 你打开一个 PR，里面改了 47 个文件、1200 行代码。你的第一反应是什么？
@@ -1391,7 +1354,7 @@ Step 3: [后续处理] → 验证 ✓
 
 ---
 
-## 3.2 设计思维：Explore Agent 是什么？
+## 3.2 Explore Agent 是什么？
 
 在 Claude Code 中，Explore Agent 是一种专门用来**探索代码库**的 subagent。它的特点：
 
@@ -1585,8 +1548,6 @@ def parse_diff(raw_diff: str) -> DiffResult:
     return result
 ```
 
-> 💡 **为什么用 dataclass？** 比起返回 dict，dataclass 有类型提示、自动生成 `__repr__`，还能加 property 做计算属性。后面 agent 拿到这个数据结构，用起来更方便。
-
 ### 3.3.3 边界情况：真实世界的 diff 没那么干净
 
 上面的解析器能处理最常见的情况，但真实项目中你会遇到这些边界：
@@ -1656,9 +1617,7 @@ review-bot HEAD~3 --repo /path/to/other/repo
 
 ## 3.5 小结
 
-- Explore Agent 是 Claude Code 的"侦察兵"，只读不写，上下文隔离
-- Git diff 解析是 Code Review 的第一步：先理解变更，再做审查
-- 用 dataclass 定义结构化数据，比 dict 更安全、更好用
+diff 解析器是整个 Review Bot 的数据入口，后面所有 agent 的审查都建立在这份结构化数据上。先把核心路径跑通，边界情况留给 Ch8 的测试来暴露。
 
 ---
 
@@ -1676,13 +1635,6 @@ review-bot HEAD~3 --repo /path/to/other/repo
 - Dataclass（Python 数据类）
 - ABC（Abstract Base Class，抽象基类）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Agent（专业角色） | 一个 AI 什么都审，结果什么都审不精——划定专业角色，各司其职 |
-| Prompt 工程 | 同样的模型，不同的 prompt 效果天差地别——用角色、能力、约束三要素设计 prompt |
-
 ## 4.1 场景引入
 
 假设你是一个技术总监，要审查一个重要的 PR。你会怎么安排？
@@ -1698,7 +1650,7 @@ review-bot HEAD~3 --repo /path/to/other/repo
 
 ---
 
-## 4.2 设计思维：Agent = 角色 + 能力 + 约束
+## 4.2 Agent = 角色 + 能力 + 约束
 
 设计一个好的 Agent，核心就三件事：
 
@@ -2084,9 +2036,7 @@ If no issues found, respond with: "[无问题时的标准回复]"
 
 ## 4.6 小结
 
-- Agent 设计三要素：角色、能力、约束
-- Prompt 要具体、有边界、有统一输出格式
-- 四个审查 agent 各司其职：安全、性能、风格、逻辑
+四个 agent 能各司其职，靠的是清晰的边界和具体的检查清单。角色、能力、约束定义清楚了，prompt 写完基本就能用；剩下的工作是用真实数据迭代，把误报和漏报一点点磨掉。
 
 ---
 
@@ -2100,13 +2050,6 @@ If no issues found, respond with: "[无问题时的标准回复]"
 - Subagent（子代理，由主 Agent 派出执行子任务）
 - Context Isolation（上下文隔离，每个 subagent 拥有独立的对话上下文）
 - Timeout（超时，等待操作完成的最大时间限制）
-
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Ch5 Fan-out/Fan-in | 4 个 Agent 串行太慢——同时派出去，最后统一收结果 |
-| Subagent | 子任务的中间过程塞满主 Agent 的记忆——独立上下文，只带结论回来 |
 
 ## 5.1 场景引入
 
@@ -2129,7 +2072,7 @@ If no issues found, respond with: "[无问题时的标准回复]"
 
 ---
 
-## 5.2 设计思维：Claude Code 的并行执行机制
+## 5.2 Claude Code 的并行执行机制
 
 ### 5.2.1 怎么实现并行？
 
@@ -2403,10 +2346,7 @@ Task(subagent_type="general-purpose", prompt="...", run_in_background=True)
 
 ## 5.5 小结
 
-- 并行执行的关键：在同一条消息中发起多个 Task 调用
-- Fan-out / Fan-in 是最常用的并行模式
-- 每个 subagent 上下文隔离，互不干扰
-- 并发数建议不超过 4 个
+Fan-out/Fan-in 的实现就是在同一条消息里发起多个 Task 调用，剩下的事交给 Claude Code。上下文隔离确保了 agent 之间不会互相污染，并发上限控制在 4 个以内就够用。
 
 ---
 
@@ -2422,13 +2362,6 @@ Task(subagent_type="general-purpose", prompt="...", run_in_background=True)
 - CI/CD（Continuous Integration/Continuous Delivery，持续集成/持续交付）
 - Deduplication（去重，合并重复的审查结果）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Result Aggregation | 四份散装结果没人能一眼看出结论——分类、排序、去重，生成一份能做决策的报告 |
-| Verdict（裁定） | 看完报告还是不知道"这个 PR 能不能合"——用规则自动给出 PASS / NEEDS_WORK / FAIL |
-
 ## 6.1 场景引入
 
 四个审查 agent 跑完了，你手里有四份独立的审查结果。安全 agent 说发现了 2 个问题，性能 agent 说有 1 个警告，风格 agent 提了 5 条建议，逻辑 agent 说一切正常。
@@ -2437,7 +2370,7 @@ Task(subagent_type="general-purpose", prompt="...", run_in_background=True)
 
 ---
 
-## 6.2 设计思维：结果聚合的三个层次
+## 6.2 结果聚合的三个层次
 
 **层次 1：简单拼接** — 把四份结果首尾相连。能用，但不好用。读者要自己去找重点。
 
@@ -2674,9 +2607,7 @@ def render_json(report: Report) -> str:
 
 ## 6.5 小结
 
-- 结果聚合不只是拼接，要分类、排序、给出整体判断
-- 条件逻辑让 workflow 能根据结果做决策
-- 统一的输出格式是聚合的前提——在 agent 设计阶段就要定好
+聚合不是把四份结果拼在一起就完事。统一格式、按严重程度排序、给出整体 verdict——这些要在 agent 设计阶段就想清楚，聚合阶段只是收割前面的设计决策。
 
 ---
 
@@ -2692,13 +2623,6 @@ def render_json(report: Report) -> str:
 - Regex（Regular Expression，正则表达式，文本模式匹配语法）
 - Matcher（匹配器，Hook 中用于筛选目标工具的过滤条件）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| Hook | 每次提交都要手动跑审查，总是忘——事件触发，commit 一提交自动执行 |
-| Skill | 同样的审查流程每次都要重新描述一遍——封装成 `/review-bot` 一条命令搞定 |
-
 ## 7.1 场景引入
 
 到这一步，Review Bot 已经能跑了。但每次都要手动输入 `/review-bot`，就像有了洗碗机却还要手动按开关——能用，但不够爽。
@@ -2709,7 +2633,7 @@ def render_json(report: Report) -> str:
 
 ---
 
-## 7.2 设计思维：Hooks 是什么？
+## 7.2 Hooks 是什么？
 
 Claude Code 的 Hooks 是一种**事件驱动的自动化机制**。你可以配置：当某个工具被调用时，自动执行一段 shell 命令。
 
@@ -3047,12 +2971,7 @@ examples\commands\install.bat C:\projects\my-app
 
 ## 7.5 小结
 
-- Hooks 是事件驱动的自动化：工具调用前后自动执行 shell 命令
-- Hook 通过 stdin JSON 接收工具调用的上下文信息
-- PreToolUse 可以拦截危险操作，PostToolUse 可以自动后处理
-- Skills 是可复用的 prompt 模板：`.claude/skills/<name>/SKILL.md` 创建，用 `/name` 触发
-- Skill 用 `$ARGUMENTS` 接收参数，第一行写目标，后面列具体步骤
-- 三个自定义目录各有分工：`skills/`（手动或自动触发）、`agents/`（subagent 定义）、`rules/`（自动加载规则）
+Hook 负责"自动跑起来"，Skill 负责"怎么跑"——两者配合，把原来每次都要手动描述的审查流程变成一个 `/review-bot` 搞定。记住那个分工原则：轻量操作放 Hook，重量级编排交给 Skill。
 
 ---
 
@@ -3069,13 +2988,6 @@ examples\commands\install.bat C:\projects\my-app
 - Regression（回归，修改代码后旧功能意外损坏）
 - CI（Continuous Integration，持续集成）
 
-**本章新概念**
-
-| 概念 | 解决什么问题 |
-|------|------------|
-| TDD with AI | 让 AI 改代码总怕改坏东西——先写测试当安全网，改坏了测试会告诉你 |
-| Verification Loop | AI 说"搞定了"但你不敢信——给它验证手段，让它自己确认做对了 |
-
 ## 8.1 场景引入
 
 Review Bot 已经能自动审查代码了。但有个尴尬的问题：如果 diff 解析器有 bug，把新增行当成删除行呢？如果报告生成器漏掉了 critical 级别的问题呢？
@@ -3084,7 +2996,7 @@ Review Bot 已经能自动审查代码了。但有个尴尬的问题：如果 di
 
 ---
 
-## 8.2 设计思维：验证优先 — 最高杠杆的实践
+## 8.2 验证优先 — 最高杠杆的实践
 
 官方文档把"给 Claude 一种验证自己工作的方式"列为**最高杠杆**的操作。意思是：不要只告诉 Claude 做什么，还要告诉它怎么确认做对了。
 
@@ -3123,7 +3035,7 @@ Review Bot 已经能自动审查代码了。但有个尴尬的问题：如果 di
 
 ---
 
-## 8.3 设计思维：测试策略
+## 8.3 测试策略
 
 ### 8.3.1 该测什么？
 
@@ -3570,13 +3482,7 @@ def test_parse_diff_with_unicode():
 
 ## 8.6 小结
 
-- **验证优先**是最高杠杆的实践——在 prompt 中提供验证标准，让 Claude 能自我检查
-- 测试是工具可信度的基础——审查别人代码的工具，自己的代码更要经得起审查
-- TDD with AI：用 Red → Green → Refactor 循环，AI 在每个阶段都能加速
-- 测试分层：单元测试验证零件，集成测试验证组装，prompt 测试验证设计约束
-- 只测你能控制的：数据结构、聚合逻辑、prompt 结构。不要测 LLM 的输出内容
-- Hook 自动跑测试 + CLAUDE.md 测试规则 = 改完代码立刻知道有没有破坏什么
-- AI 写测试的三个陷阱：快照式断言、过度 mock、完美测试数据
+给审查工具加测试不是仪式感，而是实际需要：diff 解析器出一个 bug，整个报告的可信度就垮了。养成在 prompt 里写验证标准的习惯——让 Claude 自己跑测试确认，比你事后检查省心得多。
 
 ---
 

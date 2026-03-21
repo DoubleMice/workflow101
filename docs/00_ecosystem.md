@@ -284,9 +284,7 @@ Claude Code 通过 Task tool 的 `subagent_type` 参数指定 subagent 类型：
 
 Agent 的"工作记忆"。所有的对话历史、读过的代码、工具调用结果，都会占用上下文窗口的空间。
 
-Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。
-
-> 💡 **Tip**: 当上下文快满时，Claude Code 会自动压缩（compact）。你也可以手动执行 `/compact` 来释放空间。
+Claude Code 的上下文窗口大小取决于底层模型（Opus 4.6 已支持 1M token beta）。听起来很大，但读几个大文件就能吃掉一大半。这就是为什么 subagent 的上下文隔离那么重要——你不想让一个探索任务把主 agent 的记忆撑爆。上下文快满时可以手动执行 `/compact` 释放空间。
 
 ### 0.4.4 MCP（Model Context Protocol）
 
@@ -431,14 +429,7 @@ claude
 
 ## 0.6 小结
 
-快速扫了一遍 AI Coding Agent 的生态：
-
-- AI Coding Agent 和聊天式 AI 的本质区别在于**自主性**
-- 商业产品（Claude Code / Codex CLI / Gemini CLI）各有侧重
-- 开源工具（OpenCode / Aider）和框架（OpenClaw / NanoClaw / NanoBot）提供了更多选择
-- 选 Claude Code 是因为它的 agent 编排能力最完整
-- AI 时代的开发模式：Vibe Coding、TDD with AI、Spec-Driven、Ralph Loop、Plan-then-Code——根据场景混合使用
-- 核心概念：Agent、Subagent、Context Window、MCP、Workflow
+工具选好了，概念对齐了，下一章开始真正动手——先想清楚再写代码。
 
 ---
 

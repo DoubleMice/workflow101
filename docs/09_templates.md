@@ -198,10 +198,7 @@ Test-Driven（持续验证质量）
 
 ## 9.4 小结
 
-- 6 种核心模式：Sequential、Fan-out/Fan-in、Explore、Event-Driven、Test-Driven、Specialized Agent
-- 模式不是孤立的，真实项目往往是多种模式的组合
-- 先理解每种模式的适用场景，再根据需求自由组合
-- 模板是起点，不是终点——根据实际情况调整
+6 种模式各有适用场景，但在真实项目里它们很少单独出现——Review Bot 本身就是把 6 种模式串起来用的。模板给你一个起点，具体怎么组合，看需求说话。
 
 ---
 
