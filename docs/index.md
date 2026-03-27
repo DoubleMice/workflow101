@@ -42,12 +42,61 @@ Verdict: NEEDS_WORK (1 critical issue)
 3. 收集所有审查结果，按严重程度排序，生成结构化报告
 4. 还能在 git commit 时自动触发——你甚至不用手动跑
 
+## 快速开始
+
+3 分钟跑通一个最小示例，感受 Claude Code 的核心能力。原理不用管，后面章节会讲。
+
+### 1. 安装 Claude Code
+
+```bash
+npm install -g @anthropic-ai/claude-code
+claude --version   # 确认安装成功
+```
+
+首次启动会要求登录 Anthropic 账号或配置 API key，按提示操作即可。
+
+### 2. 在你的项目中启动
+
+```bash
+cd ~/your-project   # 换成你自己的项目目录
+claude               # 启动 Claude Code
+```
+
+试着输入一句话，比如：
+
+```
+> 这个项目的目录结构是什么？用了哪些技术栈？
+```
+
+Claude Code 会自动读取文件、分析代码，给你一份结构化的回答。这就是 **Explore Agent** 的能力——Ch3 会详细讲。
+
+### 3. 体验多 Agent 并行审查
+
+把教程的 Skill 和 Agent 配置安装到你的项目：
+
+```bash
+# 从教程仓库安装配置（Skills + Agents + Hooks + CLAUDE.md）
+git clone https://github.com/DoubleMice/workflow101.git /tmp/workflow101
+/tmp/workflow101/examples/commands/install.sh ~/your-project --full
+# Windows: examples\commands\install.bat C:\your-project --full
+```
+
+回到 Claude Code，输入：
+
+```
+> /review-bot HEAD~1
+```
+
+你会看到 4 个专业审查 agent（安全 / 性能 / 风格 / 逻辑）同时启动，各自独立审查，最后汇总成一份报告。这就是 **Fan-out / Fan-in** 编排模式——Ch5 的核心内容。
+
+> 想了解背后发生了什么？从 [Ch0: 生态概览](00_ecosystem.md) 开始阅读。
+
 ## 你能学到什么？
 
 每个概念都是为了解决一个真实问题：
 
 | 你遇到的问题 | 解决它的概念 | 对应章节 |
-|-------------|------------|---------|
+|-------------|------------|----------|
 | 一个 AI 什么都干，结果什么都不精 | **Agent** — 给 AI 划定专业角色，各司其职 | Ch4 |
 | 派 Agent 调研，回来把上下文撑爆了 | **Subagent** — 独立上下文，只带结论回来 | Ch5 |
 | 同样的审查流程每次都要重新描述一遍 | **Skill** — 把常用流程封装成一条命令 | Ch7 |
@@ -109,63 +158,6 @@ Verdict: NEEDS_WORK (1 critical issue)
 1. **新手按顺序阅读** — 每章都在前一章的代码基础上继续
 2. **此事要躬行** — 每章都有完整的操作步骤，别光看不练
 3. **带着项目来** — 学完一章，想想自己的项目能怎么用
-
-## 前置要求
-
-- macOS / Linux / Windows WSL
-- Node.js 18+（安装 Claude Code 用）
-- Python 3.10+（构建项目用）
-- Anthropic API key 或 自行修改`.claude/settings.json`
-- 基本的命令行和 Git 操作能力
-
-## 快速开始
-
-3 分钟跑通一个最小示例，感受 Claude Code 的核心能力。原理不用管，后面章节会讲。
-
-### 1. 安装 Claude Code
-
-```bash
-npm install -g @anthropic-ai/claude-code
-claude --version   # 确认安装成功
-```
-
-首次启动会要求登录 Anthropic 账号或配置 API key，按提示操作即可。
-
-### 2. 在你的项目中启动
-
-```bash
-cd ~/your-project   # 换成你自己的项目目录
-claude               # 启动 Claude Code
-```
-
-试着输入一句话，比如：
-
-```
-> 这个项目的目录结构是什么？用了哪些技术栈？
-```
-
-Claude Code 会自动读取文件、分析代码，给你一份结构化的回答。这就是 **Explore Agent** 的能力——Ch3 会详细讲。
-
-### 3. 体验多 Agent 并行审查
-
-把教程的 Skill 和 Agent 配置安装到你的项目：
-
-```bash
-# 从教程仓库安装配置（Skills + Agents + Hooks + CLAUDE.md）
-git clone https://github.com/DoubleMice/workflow101.git /tmp/workflow101
-/tmp/workflow101/examples/commands/install.sh ~/your-project --full
-# Windows: examples\commands\install.bat C:\your-project --full
-```
-
-回到 Claude Code，输入：
-
-```
-> /review-bot HEAD~1
-```
-
-你会看到 4 个专业审查 agent（安全 / 性能 / 风格 / 逻辑）同时启动，各自独立审查，最后汇总成一份报告。这就是 **Fan-out / Fan-in** 编排模式——Ch5 的核心内容。
-
-> 想了解背后发生了什么？从 [Ch0: 生态概览](00_ecosystem.md) 开始阅读。
 
 ## 参考资源
 
